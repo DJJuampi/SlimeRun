@@ -5,7 +5,6 @@ int main() {
 
 	sf::RenderWindow window(sf::VideoMode(800, 800), "test");
 	sf::Event e;
-
 	while (window.isOpen())
 	{
 		while (window.pollEvent(e))
