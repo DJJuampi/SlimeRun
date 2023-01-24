@@ -1,5 +1,6 @@
 
 #include "SFML/Graphics.hpp"
+#include <iostream>
 
 using namespace sf;
 using namespace std;
@@ -9,7 +10,22 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Slime Runner");
     window.setFramerateLimit(60);
 
-    
+    //Enemy Movement and sprite
+
+        sf::Texture enemy1Texture;
+        if (!enemy1Texture.loadFromFile("assets/enemy.png")) {
+            std::cout<< "Could not load enemy texture";
+            return 0;
+        }
+    sf::Sprite enemy1Sprite;
+    enemy1Sprite.setTexture(enemy1Texture);
+    enemy1Sprite.scale(sf::Vector2f(0.2, 0.2));
+
+    sf::RectangleShape rect;
+    sf::Vector2f enem1Position(1280, 620);
+
+    enemy1Sprite.setPosition(enem1Position);
+    // enemy1Sprite.setSize(sf::Vector2f(100, 100));
     
    
 
@@ -23,25 +39,19 @@ int main()
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) window.close();
         }
-        //Enemy Movement and sprite
-
-        sf::RectangleShape rect;
-        sf::Vector2f rectanglePosition(1280, 720 - 100);
-
-        rect.setPosition(rectanglePosition);
-        rect.setSize(sf::Vector2f(100, 100));
+      
         
-        // float yVelocity = 3; Possibly use to mak eenemy harder by moving up and down
+        // float yVelocity = 3; Possibly use to make enemy harder by moving up and down
         float xVelocity = -3;
 
-        if (rectanglePosition.x < 0 || rectanglePosition.x > 1280 - 100)  rectanglePosition.x = 1280 - 100;
+        if (enem1Position.x < 0 || enem1Position.x > 1170)  enem1Position.x = 1170;
 
-        rectanglePosition.x += xVelocity;
-        rect.setPosition(rectanglePosition);
+        enem1Position.x += xVelocity;
+        enemy1Sprite.setPosition(enem1Position);
 
         //render
         window.clear();
-        window.draw(rect);
+        window.draw(enemy1Sprite);
         window.display();
     }
 
