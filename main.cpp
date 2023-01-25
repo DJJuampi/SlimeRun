@@ -31,13 +31,6 @@ int main()
     sf::Vector2f playerPosition(100, 620);
     playerSprite.setPosition(playerPosition);
 
-
-
-
-
-
-
-
 //Enemy Movement and sprite
 
     sf::Texture enemy1Texture;
@@ -68,8 +61,6 @@ int main()
 
         }
         // Player jump
-        
-       
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             AuthJump = true;
         };
@@ -82,11 +73,11 @@ int main()
                         JumpVelocity = -4;
                     }
                 }
-                else if (playerPosition.y < 600) {
+                else if (playerPosition.y < 620) {
                     descent = true;
                     playerPosition.y -= JumpVelocity;
                     playerSprite.setPosition(playerPosition);
-                    if (playerPosition.y >= 600) {
+                    if (playerPosition.y >= 620) {
                         descent = false;
                         AuthJump = false;
                     }
@@ -96,14 +87,19 @@ int main()
                 }
         }
 
-        
         // float yVelocity = 3; Possibly use to make enemy harder by moving up and down
-        float xVelocity = -3;
+        float xVelocity = -8;
 
         if (enem1Position.x < 0 || enem1Position.x > 1170)  enem1Position.x = 1170;
 
         enem1Position.x += xVelocity;
         enemy1Sprite.setPosition(enem1Position);
+        //collision
+        
+        if (playerSprite.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
+            return 0;
+        }
+
 
         //render
         window.clear();
