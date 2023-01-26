@@ -24,8 +24,11 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Slime Runner");
     window.setFramerateLimit(60);
+
+    
+
 //Player sprite
-   
+    player player1;
     float JumpVelocity = -10;
     bool AuthJump = false;
     bool descent = false;
@@ -80,8 +83,26 @@ int main()
     enemy2Sprite.setPosition(enem2Position);
     enemy3Sprite.setPosition(enem3Position);
     
-    player player1;
-
+    //Attack Vfx
+    sf::Texture AttackTextureBottom;
+    sf::Sprite AttackSpriteBottom;
+    if (!AttackTextureBottom.loadFromFile("assets/attackBottom.png")) {
+        std::cout << "Could not load attack texture";
+        return 0;
+    };
+    sf::Vector2f AttackPositionBottom(100, 320);
+    AttackSpriteBottom.setTexture(AttackTextureBottom);
+    AttackSpriteBottom.setPosition(AttackPositionBottom);
+    
+    sf::Texture AttackTextureTop;
+    sf::Sprite AttackSpriteTop;
+    if (!AttackTextureTop.loadFromFile("assets/attackTop.png")) {
+        std::cout << "Could not load attack texture";
+        return 0;
+    };
+    sf::Vector2f AttackPositionTop(100, 120);
+    AttackSpriteTop.setTexture(AttackTextureTop);
+    AttackSpriteTop.setPosition(AttackPositionTop);
 
     while (window.isOpen())
     {
@@ -93,6 +114,20 @@ int main()
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) window.close();
 
         }
+        // Attacks against enemy 2 and 3
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+            if (player1.AttackBottom == true) {
+
+            }
+        };
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+            if (player1.AttackTop == true) {
+
+            }
+        };
+
+
         // Player jump
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             AuthJump = true;
@@ -161,6 +196,8 @@ int main()
         window.clear();
         window.draw(text);
         window.draw(Points);
+        window.draw(AttackSpriteTop);
+        window.draw(AttackSpriteBottom);
         window.draw(playerSprite);
         window.draw(enemy2Sprite);
         window.draw(enemy3Sprite);
