@@ -20,12 +20,26 @@ public:
     bool AttackTop = false;
     bool AttackBottom = false;
 };
+class Timer {
+public:
+    int Stop;
+    int Time;
+    Timer(int y, int x);
+};
+Timer::Timer(int y, int x) {
+    Stop = y;
+    Time = x;
+};
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Slime Runner");
     window.setFramerateLimit(60);
 
-    
+ //Timers
+
+    Timer AtkBot(0, 25), AtkTop(0,25);
+
+
 
 //Player sprite
     player player1;
@@ -90,7 +104,7 @@ int main()
         std::cout << "Could not load attack texture";
         return 0;
     };
-    sf::Vector2f AttackPositionBottom(100, 320);
+    sf::Vector2f AttackPositionBottom(3000, 320);
     AttackSpriteBottom.setTexture(AttackTextureBottom);
     AttackSpriteBottom.setPosition(AttackPositionBottom);
     
@@ -100,9 +114,12 @@ int main()
         std::cout << "Could not load attack texture";
         return 0;
     };
-    sf::Vector2f AttackPositionTop(100, 120);
+    sf::Vector2f AttackPositionTop(3000, 120);
     AttackSpriteTop.setTexture(AttackTextureTop);
     AttackSpriteTop.setPosition(AttackPositionTop);
+
+   
+   
 
     while (window.isOpen())
     {
@@ -116,15 +133,13 @@ int main()
         }
         // Attacks against enemy 2 and 3
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            if (player1.AttackBottom == true) {
-
-            }
+            player1.AttackBottom = true;
+           
         };
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            if (player1.AttackTop == true) {
-
-            }
+            player1.AttackTop = true;
+           
         };
 
 
@@ -172,9 +187,14 @@ int main()
         //collision
         
         if (playerSprite.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
+         
+        }
+        if (AttackSpriteTop.getGlobalBounds().intersects(enemy3Sprite.getGlobalBounds())) {
             return 0;
         }
-
+        if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
+            return 0;
+        }
         //Fonts and text
         sf::Font font;
         if (!font.loadFromFile("assets/font.ttf")) {
@@ -194,10 +214,32 @@ int main()
 
         //render
         window.clear();
+        // Timer for the bottom attack
+        if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time){
+            AtkBot.Stop = AtkBot.Stop +1;
+            AttackSpriteBottom.setPosition(100, 320);
+            window.draw(AttackSpriteBottom);
+        }
+        if (AtkBot.Stop >= AtkBot.Time) {
+            player1.AttackBottom = false;
+            AtkBot.Stop = 0;
+            AttackSpriteBottom.setPosition(AttackPositionBottom);
+        }
+        //Timer for Top Attack
+        if (player1.AttackTop == true && AtkTop.Stop <= AtkTop.Time) {
+            AtkTop.Stop = AtkTop.Stop + 1;
+            AttackSpriteTop.setPosition(100, 120);
+            window.draw(AttackSpriteTop);
+        }
+
+        if (AtkTop.Stop >= AtkTop.Time) {
+            player1.AttackTop = false;
+            AtkTop.Stop = 0;
+            AttackSpriteTop.setPosition(AttackPositionTop);
+        }
+
         window.draw(text);
         window.draw(Points);
-        window.draw(AttackSpriteTop);
-        window.draw(AttackSpriteBottom);
         window.draw(playerSprite);
         window.draw(enemy2Sprite);
         window.draw(enemy3Sprite);
