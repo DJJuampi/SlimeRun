@@ -19,6 +19,9 @@ public:
 
     bool AttackTop = false;
     bool AttackBottom = false;
+
+    bool FirstAttack = false;
+    bool SecondAttack = false;
 };
 class Timer {
 public:
@@ -170,20 +173,25 @@ int main()
                 }
         }
 
-        // float yVelocity = 3; Possibly use to make enemy harder by moving up and down
         float xVelocity = -8;
 
-        if (enem1Position.x < 0 || enem1Position.x > 1170)  enem1Position.x = 1170;
+        //Looping behaviour
+        if (enem1Position.x < -200 || enem1Position.x > 1370)  enem1Position.x = 1370;
+        if (enem2Position.x < -200 || enem2Position.x > 1370)  enem2Position.x = 1370;
+        if (enem3Position.x < -200 || enem3Position.x > 1370)  enem3Position.x = 1370;
 
         enem1Position.x += xVelocity;
         enemy1Sprite.setPosition(enem1Position);
-
-        enem2Position.x += xVelocity;
-        enemy2Sprite.setPosition(enem2Position);
-
-        enem3Position.x += xVelocity;
-        enemy3Sprite.setPosition(enem3Position);
         
+        if (player1.FirstAttack == true) {
+            enem2Position.x += xVelocity;
+            enemy2Sprite.setPosition(enem2Position);
+        }
+        if (player1.SecondAttack == true) {
+            enem3Position.x += xVelocity;
+            enemy3Sprite.setPosition(enem3Position);
+        }
+
         //collision
         
         if (playerSprite.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
@@ -211,11 +219,20 @@ int main()
 
         //Point gain
         player1.Points = player1.Points + 1;
-
+       
+        //Release of other enemies
+        if (player1.Points == 300) {
+            player1.FirstAttack = true;
+        }
+        if (player1.Points == 600) {
+            player1.SecondAttack = true;
+        }
+       
         //render
         window.clear();
+       
         // Timer for the bottom attack
-        if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time){
+        if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time && player1.FirstAttack == true){
             AtkBot.Stop = AtkBot.Stop +1;
             AttackSpriteBottom.setPosition(100, 320);
             window.draw(AttackSpriteBottom);
@@ -226,7 +243,7 @@ int main()
             AttackSpriteBottom.setPosition(AttackPositionBottom);
         }
         //Timer for Top Attack
-        if (player1.AttackTop == true && AtkTop.Stop <= AtkTop.Time) {
+        if (player1.AttackTop == true && AtkTop.Stop <= AtkTop.Time && player1.SecondAttack == true) {
             AtkTop.Stop = AtkTop.Stop + 1;
             AttackSpriteTop.setPosition(100, 120);
             window.draw(AttackSpriteTop);
