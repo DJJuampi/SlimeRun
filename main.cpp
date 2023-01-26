@@ -43,7 +43,7 @@ int main()
     sf::Vector2f playerPosition(100, 620);
     playerSprite.setPosition(playerPosition);
 
-//Enemy Movement and sprite
+//Enemy sprites
 
     sf::Texture enemy1Texture;
     if (!enemy1Texture.loadFromFile("assets/enemy.png")) {
@@ -52,12 +52,33 @@ int main()
        }
     sf::Sprite enemy1Sprite;
     enemy1Sprite.setTexture(enemy1Texture);
-    // enemy1Sprite.scale(sf::Vector2f(0.2, 0.2));
 
-    sf::RectangleShape rect;
+    sf::Texture enemy2Texture;
+    if (!enemy2Texture.loadFromFile("assets/enemy2.png")) {
+        std::cout << "Could not load enemy texture";
+        return 0;
+    }
+    sf::Sprite enemy2Sprite;
+    enemy2Sprite.setTexture(enemy2Texture);
+
+    sf::Texture enemy3Texture;
+    if (!enemy3Texture.loadFromFile("assets/enemy3.png")) {
+        std::cout << "Could not load enemy texture";
+        return 0;
+    }
+    sf::Sprite enemy3Sprite;
+    enemy3Sprite.setTexture(enemy3Texture);
+    
+    enemy2Sprite.scale(sf::Vector2f(0.2, 0.2));
+    enemy3Sprite.scale(sf::Vector2f(0.2, 0.2));
+
     sf::Vector2f enem1Position(1280, 620);
+    sf::Vector2f enem2Position(1280, 320);
+    sf::Vector2f enem3Position(1280, 120);
 
     enemy1Sprite.setPosition(enem1Position);
+    enemy2Sprite.setPosition(enem2Position);
+    enemy3Sprite.setPosition(enem3Position);
     
     player player1;
 
@@ -106,6 +127,12 @@ int main()
 
         enem1Position.x += xVelocity;
         enemy1Sprite.setPosition(enem1Position);
+
+        enem2Position.x += xVelocity;
+        enemy2Sprite.setPosition(enem2Position);
+
+        enem3Position.x += xVelocity;
+        enemy3Sprite.setPosition(enem3Position);
         
         //collision
         
@@ -135,6 +162,8 @@ int main()
         window.draw(text);
         window.draw(Points);
         window.draw(playerSprite);
+        window.draw(enemy2Sprite);
+        window.draw(enemy3Sprite);
         window.draw(enemy1Sprite);
         window.display();
     }
