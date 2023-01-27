@@ -37,6 +37,7 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Slime Runner");
     window.setFramerateLimit(60);
+    srand(time(NULL));
 
  //Timers
 
@@ -121,8 +122,9 @@ int main()
     AttackSpriteTop.setTexture(AttackTextureTop);
     AttackSpriteTop.setPosition(AttackPositionTop);
 
-   
-   
+    float xVelocity1 = -8;
+    float xVelocity2 = -8;
+    float xVelocity3 = -8;
 
     while (window.isOpen())
     {
@@ -173,23 +175,29 @@ int main()
                 }
         }
 
-        float xVelocity = -8;
+       
 
         //Looping behaviour
-        if (enem1Position.x < -200 || enem1Position.x > 1370)  enem1Position.x = 1370;
-        if (enem2Position.x < -200 || enem2Position.x > 1370)  enem2Position.x = 1370;
-        if (enem3Position.x < -200 || enem3Position.x > 1370)  enem3Position.x = 1370;
+        if (enem1Position.x < -200 || enem1Position.x > 1370) {
+            enem1Position.x = 1370;
+           xVelocity1 = rand() % 15 + 9;
+           xVelocity1 *= -1;
+        }
+        if (enem2Position.x < -200 || enem2Position.x > 1370)  return 0;
+        if (enem3Position.x < -200 || enem3Position.x > 1370)  return 0;
 
-        enem1Position.x += xVelocity;
+        enem1Position.x += xVelocity1;
         enemy1Sprite.setPosition(enem1Position);
         
         if (player1.FirstAttack == true) {
-            enem2Position.x += xVelocity;
+            enem2Position.x += xVelocity2;
             enemy2Sprite.setPosition(enem2Position);
+            
         }
         if (player1.SecondAttack == true) {
-            enem3Position.x += xVelocity;
+            enem3Position.x += xVelocity3;
             enemy3Sprite.setPosition(enem3Position);
+            
         }
 
         //collision
@@ -197,11 +205,15 @@ int main()
         if (playerSprite.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
          
         }
-        if (AttackSpriteTop.getGlobalBounds().intersects(enemy3Sprite.getGlobalBounds())) {
-            return 0;
-        }
         if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
-            return 0;
+            enem2Position.x = 1370;
+            xVelocity2 = rand() % 20 + 1;
+            xVelocity2 *= -1;
+        }
+        if (AttackSpriteTop.getGlobalBounds().intersects(enemy3Sprite.getGlobalBounds())) {
+            enem3Position.x = 1370;
+            xVelocity3 = rand() % 30 + 1;
+            xVelocity3 *= -1;
         }
         //Fonts and text
         sf::Font font;
