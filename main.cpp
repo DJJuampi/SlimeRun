@@ -15,13 +15,23 @@ using namespace sf;
 using namespace std;
 class player {
 public:
+   
+
     int Points = 0;
+    int MaxJumpHeight;
+    sf::Vector2f Pos;
+    player(sf::Vector2f y, int x);
 
     bool AttackTop = false;
     bool AttackBottom = false;
 
     bool FirstAttack = false;
     bool SecondAttack = false;
+
+};
+player::player(sf::Vector2f y, int x) {
+    Pos = y;
+    MaxJumpHeight = x;
 };
 class Timer {
 public:
@@ -96,25 +106,55 @@ int main()
     float deltatime = 0.0f;
     sf::Clock clock;
 
-//Player sprite
-    player player1;
+//Player sprites
+    player player1 (sf::Vector2f(100, 600), 350);
     float JumpVelocity = -10;
     bool AuthJump = false;
     bool descent = false;
     int cont = 0;
-
-    sf::Texture playerTexture;
-    if (!playerTexture.loadFromFile("assets/player_walk_animation_1.png")) {
+    int JumpStartPos = player1.Pos.y;
+   
+    sf::Texture playerTexture1;
+    if (!playerTexture1.loadFromFile("assets/player_walk_animation_1.png")) {
         std::cout << "Could not load player texture";
         return 0;
     }
-    Animation playerRun(&playerTexture, sf::Vector2u(5, 1), 0.1f);
-    sf::Sprite playerSprite;
+    Animation playerRun1(&playerTexture1, sf::Vector2u(5, 1), 0.1f);
+    sf::Sprite playerSprite1;
 
-    playerSprite.setTexture(playerTexture);
-    playerSprite.scale(sf::Vector2f(5, 5));
-    sf::Vector2f playerPosition(100, 600);
-    playerSprite.setPosition(playerPosition);
+    playerSprite1.setTexture(playerTexture1);
+    playerSprite1.scale(sf::Vector2f(5, 5));
+    playerSprite1.setPosition(player1.Pos);
+
+
+
+    sf::Texture playerTexture2;
+    if (!playerTexture2.loadFromFile("assets/player_walk_animation_2.png")) {
+        std::cout << "Could not load player texture";
+        return 0;
+    }
+    Animation playerRun2(&playerTexture2, sf::Vector2u(6, 1), 0.1f);
+    sf::Sprite playerSprite2;
+
+    playerSprite2.setTexture(playerTexture2);
+    playerSprite2.scale(sf::Vector2f(5, 5));
+    playerSprite2.setPosition(player1.Pos);
+
+
+
+    sf::Texture playerTexture3;
+    if (!playerTexture3.loadFromFile("assets/player_walk_animation_3.png")) {
+        std::cout << "Could not load player texture";
+        return 0;
+    }
+    Animation playerRun3(&playerTexture3, sf::Vector2u(6, 1), 0.1f);
+    sf::Sprite playerSprite3;
+
+    playerSprite3.setTexture(playerTexture3);
+    playerSprite3.scale(sf::Vector2f(5, 5));
+    playerSprite3.setPosition(player1.Pos);
+
+
 
 //Enemy sprites
 
@@ -249,23 +289,27 @@ int main()
         };
 
         if (AuthJump == true) {
-                if (playerPosition.y > 450 && descent == false) {
-                    playerPosition.y += JumpVelocity;
-                    playerSprite.setPosition(playerPosition);
-                    if (playerPosition.y <= 460) {
+                if (player1.Pos.y > player1.MaxJumpHeight && descent == false) {
+                    player1.Pos.y += JumpVelocity;
+                    playerSprite1.setPosition(player1.Pos);
+                    playerSprite2.setPosition(player1.Pos);
+                    playerSprite3.setPosition(player1.Pos);
+                    if (player1.Pos.y <= player1.MaxJumpHeight) {
                         JumpVelocity = -4;
                     }
                 }
-                else if (playerPosition.y < 600) {
+                else if (player1.Pos.y < JumpStartPos) {
                     descent = true;
-                    playerPosition.y -= JumpVelocity;
-                    playerSprite.setPosition(playerPosition);
-                    if (playerPosition.y >= 600) {
+                    player1.Pos.y -= JumpVelocity;
+                    playerSprite1.setPosition(player1.Pos);
+                    playerSprite2.setPosition(player1.Pos);
+                    playerSprite3.setPosition(player1.Pos);
+                    if (player1.Pos.y >= JumpStartPos) {
                         descent = false;
                         AuthJump = false;
                     }
                 }
-                if (descent == true && playerPosition.y >= 470) {
+                if (descent == true && player1.Pos.y >= player1.MaxJumpHeight - 20) {
                     JumpVelocity = -8;
                 }
         }
@@ -302,7 +346,7 @@ int main()
         if (player1.FirstAttack == true) {
             enem2Position.x += xVelocity2;
             enemy2Sprite.setPosition(enem2Position);
-            
+           
         }
         if (player1.SecondAttack == true) {
             enem3Position.x += xVelocity3;
@@ -312,7 +356,7 @@ int main()
 
         //collision
         
-        if (playerSprite.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
+        if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
          
         }
         if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
@@ -343,11 +387,13 @@ int main()
         player1.Points = player1.Points + 1;
        
         //Release of other enemies
-        if (player1.Points == 3000) {
+        if (player1.Points == 300) {
             player1.FirstAttack = true;
+            JumpStartPos = JumpStartPos - 25;
         }
-        if (player1.Points == 6000) {
+        if (player1.Points == 600) {
             player1.SecondAttack = true;
+            JumpStartPos = JumpStartPos - 50;
         }
        
         //render
@@ -386,8 +432,15 @@ int main()
         }
 
         //Animation loops and render
-        playerRun.Update(0, deltatime);
-        playerSprite.setTextureRect(playerRun.uvRect);
+
+        playerRun1.Update(0, deltatime);
+        playerSprite1.setTextureRect(playerRun1.uvRect);
+
+        playerRun2.Update(0, deltatime);
+        playerSprite2.setTextureRect(playerRun2.uvRect);
+
+        playerRun3.Update(0, deltatime);
+        playerSprite3.setTextureRect(playerRun3.uvRect);
 
         enem1run.Update(0, deltatime);
         enemy1Sprite.setTextureRect(enem1run.uvRect);
@@ -398,11 +451,18 @@ int main()
         enem3run.Update(0, deltatime);
         enemy3Sprite.setTextureRect(enem3run.uvRect);
 
-        
-        
+        if (player1.FirstAttack == false && player1.SecondAttack == false) {
+            window.draw(playerSprite1);
+        }
+        if (player1.FirstAttack == true && player1.SecondAttack == false) {
+            window.draw(playerSprite2);
+        }
+        if (player1.FirstAttack == true && player1.SecondAttack == true) {
+            window.draw(playerSprite3);
+        }
+
         window.draw(text);
         window.draw(Points);
-        window.draw(playerSprite);
         window.draw(enemy2Sprite);
         window.draw(enemy3Sprite);
         window.draw(enemy1Sprite);
