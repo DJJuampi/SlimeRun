@@ -33,6 +33,55 @@ Timer::Timer(int y, int x) {
     Stop = y;
     Time = x;
 };
+
+
+class Animation {
+public:
+    Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime);
+
+
+    void Update(int row, float deltatime);
+    sf::IntRect uvRect;
+
+private:
+    sf::Vector2u imageCount;
+    sf::Vector2u currentImage;
+
+    float totalTime;
+    float switchTime;
+};
+
+
+Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime) 
+{
+    this->imageCount = imageCount;
+    this->switchTime = switchTime;
+    totalTime = 0.0f;
+    currentImage.x = 0;
+
+    uvRect.width = texture->getSize().x / float(imageCount.x);
+    uvRect.height = texture->getSize().y / float(imageCount.y);
+};
+
+
+void Animation::Update(int row, float deltatime) {
+    currentImage.y = row;
+    totalTime += deltatime;
+
+    if (totalTime >= switchTime) {
+        totalTime -= switchTime;
+        currentImage.x++;
+
+        if (currentImage.x >= imageCount.x) {
+            currentImage.x = 0;
+        };
+    };
+
+    uvRect.left = currentImage.x * uvRect.width;
+    uvRect.top = currentImage.y * uvRect.height;
+}
+
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Slime Runner");
@@ -41,9 +90,11 @@ int main()
 
  //Timers
 
-    Timer AtkBot(0, 25), AtkTop(0,25);
+    Timer AtkBot(0, 29), AtkTop(0,29);
 
-
+//Animations variables
+    float deltatime = 0.0f;
+    sf::Clock clock;
 
 //Player sprite
     player player1;
@@ -53,15 +104,16 @@ int main()
     int cont = 0;
 
     sf::Texture playerTexture;
-    if (!playerTexture.loadFromFile("assets/player.png")) {
+    if (!playerTexture.loadFromFile("assets/player_walk_animation_1.png")) {
         std::cout << "Could not load player texture";
         return 0;
     }
+    Animation playerRun(&playerTexture, sf::Vector2u(5, 1), 0.1f);
     sf::Sprite playerSprite;
 
     playerSprite.setTexture(playerTexture);
-    playerSprite.scale(sf::Vector2f(0.2, 0.2));
-    sf::Vector2f playerPosition(100, 620);
+    playerSprite.scale(sf::Vector2f(5, 5));
+    sf::Vector2f playerPosition(100, 600);
     playerSprite.setPosition(playerPosition);
 
 //Enemy sprites
@@ -71,6 +123,7 @@ int main()
          std::cout<< "Could not load enemy texture";
          return 0;
        }
+    Animation enem1run(&enemy1Texture, sf::Vector2u(4, 1), 0.2f);
     sf::Sprite enemy1Sprite;
     enemy1Sprite.setTexture(enemy1Texture);
 
@@ -79,6 +132,7 @@ int main()
         std::cout << "Could not load enemy texture";
         return 0;
     }
+    Animation enem2run(&enemy2Texture, sf::Vector2u(4, 1), 0.2f);
     sf::Sprite enemy2Sprite;
     enemy2Sprite.setTexture(enemy2Texture);
 
@@ -87,11 +141,13 @@ int main()
         std::cout << "Could not load enemy texture";
         return 0;
     }
+    Animation enem3run(&enemy3Texture, sf::Vector2u(4, 1), 0.2f);
     sf::Sprite enemy3Sprite;
     enemy3Sprite.setTexture(enemy3Texture);
     
-    enemy2Sprite.scale(sf::Vector2f(0.2, 0.2));
-    enemy3Sprite.scale(sf::Vector2f(0.2, 0.2));
+    enemy1Sprite.scale(sf::Vector2f(5, 5));
+    enemy2Sprite.scale(sf::Vector2f(8, 8));
+    enemy3Sprite.scale(sf::Vector2f(8, 8));
 
     sf::Vector2f enem1Position(1280, 620);
     sf::Vector2f enem2Position(1280, 320);
@@ -108,9 +164,11 @@ int main()
         std::cout << "Could not load attack texture";
         return 0;
     };
+    Animation attackBottomVfx(&AttackTextureBottom, sf::Vector2u(6, 1), 0.1f);
     sf::Vector2f AttackPositionBottom(3000, 320);
     AttackSpriteBottom.setTexture(AttackTextureBottom);
     AttackSpriteBottom.setPosition(AttackPositionBottom);
+    AttackSpriteBottom.scale(sf::Vector2f(8, 8));
     
     sf::Texture AttackTextureTop;
     sf::Sprite AttackSpriteTop;
@@ -118,16 +176,53 @@ int main()
         std::cout << "Could not load attack texture";
         return 0;
     };
+    Animation attackTopVfx(&AttackTextureTop, sf::Vector2u(6, 1), 0.1f);
     sf::Vector2f AttackPositionTop(3000, 120);
     AttackSpriteTop.setTexture(AttackTextureTop);
     AttackSpriteTop.setPosition(AttackPositionTop);
+    AttackSpriteTop.scale(sf::Vector2f(8, 8));
+    //Background
+
+    sf::Texture Background1Texture;
+    sf::Texture Background2Texture;
+    if (!Background1Texture.loadFromFile("assets/forest_background.png") || !Background2Texture.loadFromFile("assets/forest_background.png")) {
+        std::cout << "Could not load forest background texture";
+        return 0;
+    };
+    sf::Sprite Background1Sprite;
+    sf::Sprite Background2Sprite;
+    sf::Vector2f Background1Position(0, 0);
+    sf::Vector2f Background2Position(2000, 0);
+    
+    Background1Sprite.scale(sf::Vector2f(1.6, 1.6));
+    Background1Sprite.setTexture(Background1Texture);
+    Background1Sprite.setPosition(Background1Position);
+
+    Background2Sprite.scale(sf::Vector2f(1.6, 1.6));
+    Background2Sprite.setTexture(Background2Texture);
+    Background2Sprite.setPosition(Background2Position);
+    
+    sf::Texture BackgroundCityTexture;
+    sf::Sprite BackgroundCitySprite;
+    if (!BackgroundCityTexture.loadFromFile("assets/city_background.png")) {
+        std::cout << "Could not load city background texture";
+        return 0;
+    };
+    sf::Vector2f BackgroundCityPosition(0, -1000);
+    BackgroundCitySprite.scale(sf::Vector2f(1.8, 1.8));
+    BackgroundCitySprite.setTexture(BackgroundCityTexture);
+    BackgroundCitySprite.setPosition(BackgroundCityPosition);
 
     float xVelocity1 = -8;
     float xVelocity2 = -8;
     float xVelocity3 = -8;
+    float ScollSpeed = -2;
+    float ScrollSpeed2 = -0.2;
 
     while (window.isOpen())
     {
+        deltatime = clock.restart().asSeconds();
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -161,11 +256,11 @@ int main()
                         JumpVelocity = -4;
                     }
                 }
-                else if (playerPosition.y < 620) {
+                else if (playerPosition.y < 600) {
                     descent = true;
                     playerPosition.y -= JumpVelocity;
                     playerSprite.setPosition(playerPosition);
-                    if (playerPosition.y >= 620) {
+                    if (playerPosition.y >= 600) {
                         descent = false;
                         AuthJump = false;
                     }
@@ -183,12 +278,27 @@ int main()
            xVelocity1 = rand() % 15 + 9;
            xVelocity1 *= -1;
         }
+        if (Background1Position.x < -2400) {
+            Background1Position.x = 1896;
+        }
+        if (Background2Position.x < -2400) {
+            Background2Position.x = 1896;
+        }
         if (enem2Position.x < -200 || enem2Position.x > 1370)  return 0;
         if (enem3Position.x < -200 || enem3Position.x > 1370)  return 0;
 
         enem1Position.x += xVelocity1;
         enemy1Sprite.setPosition(enem1Position);
         
+        Background1Position.x += ScollSpeed;
+        Background1Sprite.setPosition(Background1Position);
+        Background2Position.x += ScollSpeed;
+        Background2Sprite.setPosition(Background2Position);
+        BackgroundCityPosition.x += ScrollSpeed2;
+        BackgroundCitySprite.setPosition(BackgroundCityPosition);
+
+
+
         if (player1.FirstAttack == true) {
             enem2Position.x += xVelocity2;
             enemy2Sprite.setPosition(enem2Position);
@@ -233,21 +343,27 @@ int main()
         player1.Points = player1.Points + 1;
        
         //Release of other enemies
-        if (player1.Points == 300) {
+        if (player1.Points == 3000) {
             player1.FirstAttack = true;
         }
-        if (player1.Points == 600) {
+        if (player1.Points == 6000) {
             player1.SecondAttack = true;
         }
        
         //render
         window.clear();
+        window.draw(BackgroundCitySprite);
+        window.draw(Background1Sprite);
+        window.draw(Background2Sprite);
        
         // Timer for the bottom attack
         if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time && player1.FirstAttack == true){
             AtkBot.Stop = AtkBot.Stop +1;
             AttackSpriteBottom.setPosition(100, 320);
             window.draw(AttackSpriteBottom);
+            attackBottomVfx.Update(0, deltatime);
+            AttackSpriteBottom.setTextureRect(attackBottomVfx.uvRect);
+            
         }
         if (AtkBot.Stop >= AtkBot.Time) {
             player1.AttackBottom = false;
@@ -259,6 +375,8 @@ int main()
             AtkTop.Stop = AtkTop.Stop + 1;
             AttackSpriteTop.setPosition(100, 120);
             window.draw(AttackSpriteTop);
+            attackTopVfx.Update(0, deltatime);
+            AttackSpriteTop.setTextureRect(attackTopVfx.uvRect);
         }
 
         if (AtkTop.Stop >= AtkTop.Time) {
@@ -267,6 +385,21 @@ int main()
             AttackSpriteTop.setPosition(AttackPositionTop);
         }
 
+        //Animation loops and render
+        playerRun.Update(0, deltatime);
+        playerSprite.setTextureRect(playerRun.uvRect);
+
+        enem1run.Update(0, deltatime);
+        enemy1Sprite.setTextureRect(enem1run.uvRect);
+       
+        enem2run.Update(0, deltatime);
+        enemy2Sprite.setTextureRect(enem2run.uvRect);
+
+        enem3run.Update(0, deltatime);
+        enemy3Sprite.setTextureRect(enem3run.uvRect);
+
+        
+        
         window.draw(text);
         window.draw(Points);
         window.draw(playerSprite);
