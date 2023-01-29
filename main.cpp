@@ -100,7 +100,10 @@ int main()
 
  //Timers
 
-    Timer AtkBot(0, 29), AtkTop(0,29);
+    Timer AtkBot(0, 29), AtkTop(0,29), AtkBotCooldown(0, 100), AtkTopCooldown(0, 100);
+    bool AtkBotOnCooldown = false;
+    bool AtkTopOnCooldown = false;
+    int KilledSomething = false;
 
 //Animations variables
     float deltatime = 0.0f;
@@ -154,6 +157,7 @@ int main()
     playerSprite3.scale(sf::Vector2f(5, 5));
     playerSprite3.setPosition(player1.Pos);
 
+// Music and sound effects
 
 
 //Enemy sprites
@@ -271,52 +275,54 @@ int main()
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) window.close();
 
         }
+
         // Attacks against enemy 2 and 3
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            player1.AttackBottom = true;
-           
+        if (AtkBot.Stop == 0) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+                player1.AttackBottom = true;
+            }
+        }
+        if (AtkTop.Stop == 0) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+                player1.AttackTop = true;
+
+            }
         };
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            player1.AttackTop = true;
-           
-        };
-
-
-        // Player jump
+     // Player jump
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             AuthJump = true;
         };
 
         if (AuthJump == true) {
-                if (player1.Pos.y > player1.MaxJumpHeight && descent == false) {
-                    player1.Pos.y += JumpVelocity;
-                    playerSprite1.setPosition(player1.Pos);
-                    playerSprite2.setPosition(player1.Pos);
-                    playerSprite3.setPosition(player1.Pos);
-                    if (player1.Pos.y <= player1.MaxJumpHeight) {
-                        JumpVelocity = -4;
-                    }
+            if (player1.Pos.y > player1.MaxJumpHeight && descent == false) {
+                player1.Pos.y += JumpVelocity;
+                playerSprite1.setPosition(player1.Pos);
+                playerSprite2.setPosition(player1.Pos);
+                playerSprite3.setPosition(player1.Pos);
+                if (player1.Pos.y <= player1.MaxJumpHeight) {
+                    JumpVelocity = -4;
                 }
-                else if (player1.Pos.y < JumpStartPos) {
-                    descent = true;
-                    player1.Pos.y -= JumpVelocity;
-                    playerSprite1.setPosition(player1.Pos);
-                    playerSprite2.setPosition(player1.Pos);
-                    playerSprite3.setPosition(player1.Pos);
-                    if (player1.Pos.y >= JumpStartPos) {
-                        descent = false;
-                        AuthJump = false;
-                    }
+            }
+            else if (player1.Pos.y < JumpStartPos) {
+                descent = true;
+                player1.Pos.y -= JumpVelocity;
+                playerSprite1.setPosition(player1.Pos);
+                playerSprite2.setPosition(player1.Pos);
+                playerSprite3.setPosition(player1.Pos);
+                if (player1.Pos.y >= JumpStartPos) {
+                    descent = false;
+                    AuthJump = false;
                 }
-                if (descent == true && player1.Pos.y >= player1.MaxJumpHeight - 20) {
-                    JumpVelocity = -8;
-                }
+            }
+            if (descent == true && player1.Pos.y >= player1.MaxJumpHeight - 20) {
+                JumpVelocity = -8;
+            }
         }
 
        
 
-        //Looping behaviour
+     //Looping behaviour
         if (enem1Position.x < -200 || enem1Position.x > 1370) {
             enem1Position.x = 1370;
            xVelocity1 = rand() % 15 + 9;
@@ -354,10 +360,10 @@ int main()
             
         }
 
-        //collision
+     //collision
         
         if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
-         
+            
         }
         if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
             enem2Position.x = 1370;
@@ -369,7 +375,7 @@ int main()
             xVelocity3 = rand() % 30 + 1;
             xVelocity3 *= -1;
         }
-        //Fonts and text
+     //Fonts and text
         sf::Font font;
         if (!font.loadFromFile("assets/font.ttf")) {
             std::cout << "Could not load font";
@@ -383,54 +389,85 @@ int main()
         text.setString("Puntaje: ");
         Points.setPosition(1, 28);
 
-        //Point gain
+     //Point gain
         player1.Points = player1.Points + 1;
        
-        //Release of other enemies
-        if (player1.Points == 300) {
+     //Release of other enemies
+        if (player1.Points >= 300 && player1.FirstAttack == false) {
             player1.FirstAttack = true;
             JumpStartPos = JumpStartPos - 25;
         }
-        if (player1.Points == 600) {
+        if (player1.Points >= 600 && player1.FirstAttack == false) {
             player1.SecondAttack = true;
             JumpStartPos = JumpStartPos - 50;
         }
        
-        //render
+     //render
         window.clear();
         window.draw(BackgroundCitySprite);
         window.draw(Background1Sprite);
         window.draw(Background2Sprite);
        
-        // Timer for the bottom attack
-        if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time && player1.FirstAttack == true){
-            AtkBot.Stop = AtkBot.Stop +1;
+     // Timer for the bottom attack and cooldown
+    
+
+
+        if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time && player1.FirstAttack == true && AtkBotOnCooldown == false) {
+            AtkBot.Stop = AtkBot.Stop + 1;
             AttackSpriteBottom.setPosition(100, 320);
             window.draw(AttackSpriteBottom);
             attackBottomVfx.Update(0, deltatime);
             AttackSpriteBottom.setTextureRect(attackBottomVfx.uvRect);
-            
+           
+
+            if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
+                player1.Points = player1.Points + 500;
+                KilledSomething = true;
+            }
         }
         if (AtkBot.Stop >= AtkBot.Time) {
             player1.AttackBottom = false;
             AtkBot.Stop = 0;
             AttackSpriteBottom.setPosition(AttackPositionBottom);
+                if(KilledSomething == false) AtkBotOnCooldown = true;
+            KilledSomething = false;
+        }
+        
+        if (AtkBotOnCooldown == true) AtkBotCooldown.Stop = AtkBotCooldown.Stop + 1;
+    
+        if (AtkBotCooldown.Stop >= AtkBotCooldown.Time) {
+            AtkBotOnCooldown = false;
+            AtkBotCooldown.Stop = 0;
         }
         //Timer for Top Attack
-        if (player1.AttackTop == true && AtkTop.Stop <= AtkTop.Time && player1.SecondAttack == true) {
+        if (player1.AttackTop == true && AtkTop.Stop <= AtkTop.Time && player1.SecondAttack == true && AtkTopOnCooldown == false) {
             AtkTop.Stop = AtkTop.Stop + 1;
             AttackSpriteTop.setPosition(100, 120);
             window.draw(AttackSpriteTop);
             attackTopVfx.Update(0, deltatime);
             AttackSpriteTop.setTextureRect(attackTopVfx.uvRect);
+           
+            if (AttackSpriteTop.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
+                player1.Points = player1.Points + 500;
+                KilledSomething = true;
+            }
         }
 
         if (AtkTop.Stop >= AtkTop.Time) {
             player1.AttackTop = false;
             AtkTop.Stop = 0;
             AttackSpriteTop.setPosition(AttackPositionTop);
+            if (KilledSomething == false) AtkTopOnCooldown = true;
+            KilledSomething = false;
         }
 
+
+        if (AtkTopOnCooldown == true) AtkTopCooldown.Stop = AtkTopCooldown.Stop + 1;
+
+        if (AtkTopCooldown.Stop >= AtkTopCooldown.Time) {
+            AtkTopOnCooldown = false;
+            AtkTopCooldown.Stop = 0;
+        }
         //Animation loops and render
 
         playerRun1.Update(0, deltatime);
