@@ -99,7 +99,7 @@ int main()
     window.setFramerateLimit(60);
     srand(time(NULL));
 
-        //Timers
+ //Timers
 
         Timer AtkBot(0, 29), AtkTop(0, 29), AtkBotCooldown(0, 100), AtkTopCooldown(0, 100);
         bool AtkBotOnCooldown = false;
@@ -107,20 +107,15 @@ int main()
         bool KilledSomethingBot = false;
         bool KilledSomethingTop = false;
 
-        //Animations variables
+ //Animations variables
+
         float deltatime = 0.0f;
         sf::Clock clock;
+ 
+ //Player sprites
 
-        //Player sprites
         player player1(sf::Vector2f(100, 600), 350);
-        float JumpVelocity = -10;
-        bool AuthJump = false;
-        bool descent = false;
-        int cont = 0;
-        int JumpStartPos = player1.Pos.y;
-        bool GameOver = false;
-        
-
+       
         sf::Texture playerTexture1;
         if (!playerTexture1.loadFromFile("assets/player_walk_animation_1.png")) {
             std::cout << "Could not load player texture";
@@ -161,7 +156,16 @@ int main()
         playerSprite3.scale(sf::Vector2f(5, 5));
         playerSprite3.setPosition(player1.Pos);
 
-        // Music and sound effects
+ //Player variables
+
+        float JumpVelocity = -10;
+        bool AuthJump = false;
+        bool descent = false;
+        int cont = 0;
+        int JumpStartPos = player1.Pos.y;
+        bool GameOver = false;
+
+ // Music
 
         int MusicVolume = 15;
 
@@ -187,6 +191,8 @@ int main()
         }
         Track03.setVolume(MusicVolume);
 
+ // Sound Effects / Sfx
+
         sf::Music AtkTopSfx;
         if (!AtkTopSfx.openFromFile("assets/AtkTopSfx.ogg")) { //Sound: Hell flare from Tagatame no ALchemist https://youtu.be/z3r0NcPKMpc
             std::cout << "Could not load AtkTopSfx.ogg";
@@ -200,7 +206,8 @@ int main()
             return 0;
         }
         AtkBotSfx.setVolume(0);
-        //Enemy sprites
+
+ //Enemy sprites
 
         sf::Texture enemy1Texture;
         if (!enemy1Texture.loadFromFile("assets/enemy.png")) {
@@ -241,7 +248,8 @@ int main()
         enemy2Sprite.setPosition(enem2Position);
         enemy3Sprite.setPosition(enem3Position);
 
-        //Attack Vfx
+ //Attack Vfx
+
         sf::Texture AttackTextureBottom;
         sf::Sprite AttackSpriteBottom;
         if (!AttackTextureBottom.loadFromFile("assets/attackBottom.png")) {
@@ -266,7 +274,7 @@ int main()
         AttackSpriteTop.setPosition(AttackPositionTop);
         AttackSpriteTop.scale(sf::Vector2f(8, 8));
 
-        //Background
+ //Background
 
         sf::Texture Background1Texture;
         sf::Texture Background2Texture;
@@ -304,7 +312,7 @@ int main()
         float ScollSpeed = -2;
         float ScrollSpeed2 = -0.2;
 
-        //Fonts and text
+ //Fonts and text
         sf::Font font;
         if (!font.loadFromFile("assets/font.ttf")) {
             std::cout << "Could not load font";
@@ -322,33 +330,50 @@ int main()
         PressE.setFont(font);
         PressE.setCharacterSize(20);
         PressE.setPosition(1, 300);
+        PressE.setOutlineColor(sf::Color(0, 0, 0, 255));
+        PressE.setOutlineThickness(8);
 
         PressQ.setFont(font);
         PressQ.setCharacterSize(20);
         PressQ.setPosition(1, 120);
+        PressQ.setOutlineColor(sf::Color(0, 0, 0, 255));
+        PressQ.setOutlineThickness(8);
 
         PressSpace.setFont(font);
         PressSpace.setString("Press Space to jump over the enemy");
         PressSpace.setCharacterSize(20);
         PressSpace.setPosition(1, 600);
+        PressSpace.setOutlineColor(sf::Color(0, 0, 0, 255));
+        PressSpace.setOutlineThickness(8);
 
         GameOverText.setFont(font);
         GameOverText.setString("Game over your score was: ");
         GameOverText.setPosition(200, 300);
+        GameOverText.setOutlineColor(sf::Color(0, 0, 0, 255));
+        GameOverText.setOutlineThickness(8);
 
         GameOverText2.setFont(font);
         GameOverText2.setString("Press Esc to exit");
         GameOverText2.setPosition(200, 350);
+        GameOverText2.setOutlineColor(sf::Color(0, 0, 0, 255));
+        GameOverText2.setOutlineThickness(8);
 
         text.setFont(font);
         text.setString("Puntaje: ");
+        text.setOutlineColor(sf::Color(0, 0, 0, 255));
+        text.setOutlineThickness(8);
+
+       
 
 
 
         while (window.isOpen())
         {
-            
+         //Necessary for the animations
+
                 deltatime = clock.restart().asSeconds();
+
+         //Main default window event
 
                 sf::Event event;
                 while (window.pollEvent(event))
@@ -359,8 +384,12 @@ int main()
 
 
                 }
+
+         //Makes the game stop when in the end screen
+
                if (GameOver == false) {
-                // Attacks against enemy 2 and 3
+
+         // Attacks against enemy 2 and 3
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
                     player1.AttackBottom = true;
@@ -375,7 +404,8 @@ int main()
                     PressQ.setString("");
                 }
 
-                // Player jump
+         // Player jump
+
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
                     AuthJump = true;
                     PressSpace.setString("");
@@ -410,7 +440,8 @@ int main()
 
 
 
-                //Looping behaviour
+         //Looping behaviour
+
                 if (enem1Position.x < -200 || enem1Position.x > 1370) {
                     enem1Position.x = 1370;
                     xVelocity1 = rand() % 15 + 9;
@@ -422,11 +453,18 @@ int main()
                 if (Background2Position.x < -2400) {
                     Background2Position.x = 1896;
                 }
+
+         //What happens after an enemy reaches past the left side of the screen
+
                 if (enem2Position.x < -200 || enem2Position.x > 1370)  GameOver = true;;
                 if (enem3Position.x < -200 || enem3Position.x > 1370)  GameOver = true;;
 
+         //Enemy 1 movement
+
                 enem1Position.x += xVelocity1;
                 enemy1Sprite.setPosition(enem1Position);
+
+         //Main Scrolling Function for the background
 
                 Background1Position.x += ScollSpeed;
                 Background1Sprite.setPosition(Background1Position);
@@ -436,6 +474,7 @@ int main()
                 BackgroundCitySprite.setPosition(BackgroundCityPosition);
 
 
+         //Activation of movement for enemies 2 and 3
 
                 if (player1.FirstAttack == true) {
                     enem2Position.x += xVelocity2;
@@ -448,7 +487,7 @@ int main()
 
                 }
 
-                //collision
+         //Collision detection 
 
                 if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
                     GameOver = true;
@@ -463,19 +502,25 @@ int main()
                     xVelocity3 = rand() % 30 + 1;
                     xVelocity3 *= -1;
                 }
-                //Point gain
+
+         //Point gain
 
                 player1.Points = player1.Points + 1;
                 
                  }
-                 //Fonts and text
+
+         //Fonts and text that need to be updated every frame
+
                 sf::Text Points(toString<int>(player1.Points), font);
-                Points.setPosition(1, 28);
+                Points.setPosition(1, 35);
+                Points.setOutlineColor(sf::Color(0, 0, 0, 255));
+                Points.setOutlineThickness(8);
 
                 
 
-                //Release of other enemies and evenst that happen in the switch between forms
-                if (player1.Points >= 300 && player1.FirstAttack == false) {
+         //Release of other enemies and evenst that happen in the switch between forms
+                
+                if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
                     JumpStartPos = JumpStartPos - 25;
                     Track01.stop();
@@ -485,7 +530,7 @@ int main()
                     ScollSpeed = -4;
                     ScrollSpeed2 = -0.4;
                 }
-                if (player1.Points >= 600 && player1.SecondAttack == false) {
+                if (player1.Points >= 30000 /*Change this value to change threshold for the second change*/ && player1.SecondAttack == false) {
                     player1.SecondAttack = true;
                     JumpStartPos = JumpStartPos - 50;
                     Track02.stop();
@@ -495,23 +540,25 @@ int main()
                     ScollSpeed = -6;
                     ScrollSpeed2 = -0.6;
                 }
-           
-                //render
+
+         //Rendering
 
                 window.clear();
                 window.draw(BackgroundCitySprite);
                 window.draw(Background1Sprite);
                 window.draw(Background2Sprite);
-                
+
+         //Game over screen
+
                 if (GameOver == true) {
                     Points.setPosition(835, 300);
 
+                    text.setString("");
                     window.draw(GameOverText);
                     window.draw(GameOverText2);
                 }
-                // Timer for the bottom attack and cooldown
 
-
+         // Timer for the bottom attack and cooldown
 
                 if (player1.AttackBottom == true && AtkBot.Stop <= AtkBot.Time && player1.FirstAttack == true && AtkBotOnCooldown == false) {
                     AtkBot.Stop = AtkBot.Stop + 1;
@@ -519,7 +566,6 @@ int main()
                     window.draw(AttackSpriteBottom);
                     attackBottomVfx.Update(0, deltatime);
                     AttackSpriteBottom.setTextureRect(attackBottomVfx.uvRect);
-
 
                     if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
                         player1.Points = player1.Points + 500;
@@ -532,16 +578,16 @@ int main()
                     AttackSpriteBottom.setPosition(AttackPositionBottom);
                     if (KilledSomethingBot == false) AtkBotOnCooldown = true;
                     KilledSomethingBot = false;
-
                 }
 
                 if (AtkBotOnCooldown == true) AtkBotCooldown.Stop = AtkBotCooldown.Stop + 1;
-
                 if (AtkBotCooldown.Stop >= AtkBotCooldown.Time) {
                     AtkBotOnCooldown = false;
                     AtkBotCooldown.Stop = 0;
                 }
-                //Timer for Top Attack
+
+         //Timer for Top Attack
+
                 if (player1.AttackTop == true && AtkTop.Stop <= AtkTop.Time && player1.SecondAttack == true && AtkTopOnCooldown == false) {
                     AtkTop.Stop = AtkTop.Stop + 1;
                     AttackSpriteTop.setPosition(100, 120);
@@ -554,23 +600,21 @@ int main()
                         KilledSomethingTop = true;
                     }
                 }
-
                 if (AtkTop.Stop >= AtkTop.Time) {
                     player1.AttackTop = false;
                     AtkTop.Stop = 0;
                     AttackSpriteTop.setPosition(AttackPositionTop);
-                    if (KilledSomethingTop == false) AtkTopOnCooldown = true;
+                        if (KilledSomethingTop == false) AtkTopOnCooldown = true;
                     KilledSomethingTop = false;
                 }
 
-
                 if (AtkTopOnCooldown == true) AtkTopCooldown.Stop = AtkTopCooldown.Stop + 1;
-
                 if (AtkTopCooldown.Stop >= AtkTopCooldown.Time) {
                     AtkTopOnCooldown = false;
                     AtkTopCooldown.Stop = 0;
                 }
-                //Animation loops and render
+
+         //Animation loops and render
 
                 playerRun1.Update(0, deltatime);
                 playerSprite1.setTextureRect(playerRun1.uvRect);
@@ -599,7 +643,8 @@ int main()
                 if (player1.FirstAttack == true && player1.SecondAttack == true) {
                     window.draw(playerSprite3);
                 }
-                
+
+         //Main .draw section
                 window.draw(text);
                 window.draw(PressE);
                 window.draw(PressQ);
