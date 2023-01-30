@@ -20,6 +20,10 @@ public:
 
     int Points = 0;
     int MaxJumpHeight;
+    float Acceleration = 0;
+    float DefaultJumpVelocity = -15;
+    float JumpVelocity = DefaultJumpVelocity;
+
     sf::Vector2f Pos;
     player(sf::Vector2f y, int x);
 
@@ -158,7 +162,7 @@ int main()
 
  //Player variables
 
-        float JumpVelocity = -10;
+        
         bool AuthJump = false;
         bool descent = false;
         int cont = 0;
@@ -277,34 +281,39 @@ int main()
  //Background
 
         sf::Texture Background1Texture;
-        sf::Texture Background2Texture;
-        if (!Background1Texture.loadFromFile("assets/forest_background.png") || !Background2Texture.loadFromFile("assets/forest_background.png")) {
+        if (!Background1Texture.loadFromFile("assets/forest_background.png")) {
             std::cout << "Could not load forest background texture";
             return 0;
         };
         sf::Sprite Background1Sprite;
         sf::Sprite Background2Sprite;
         sf::Vector2f Background1Position(0, 0);
-        sf::Vector2f Background2Position(2000, 0);
+        sf::Vector2f Background2Position(2300, 0);
 
         Background1Sprite.scale(sf::Vector2f(1.6, 1.6));
         Background1Sprite.setTexture(Background1Texture);
         Background1Sprite.setPosition(Background1Position);
 
         Background2Sprite.scale(sf::Vector2f(1.6, 1.6));
-        Background2Sprite.setTexture(Background2Texture);
+        Background2Sprite.setTexture(Background1Texture);
         Background2Sprite.setPosition(Background2Position);
 
         sf::Texture BackgroundCityTexture;
-        sf::Sprite BackgroundCitySprite;
-        if (!BackgroundCityTexture.loadFromFile("assets/city_background.png")) {
+        sf::Sprite BackgroundCitySprite1;
+        if (!BackgroundCityTexture.loadFromFile("assets/city_Background.png")) {
             std::cout << "Could not load city background texture";
             return 0;
         };
-        sf::Vector2f BackgroundCityPosition(0, -1000);
-        BackgroundCitySprite.scale(sf::Vector2f(1.8, 1.8));
-        BackgroundCitySprite.setTexture(BackgroundCityTexture);
-        BackgroundCitySprite.setPosition(BackgroundCityPosition);
+        sf::Vector2f BackgroundCityPosition1(0, 0);
+        BackgroundCitySprite1.scale(sf::Vector2f(1.2, 1.2));
+        BackgroundCitySprite1.setTexture(BackgroundCityTexture);
+        BackgroundCitySprite1.setPosition(BackgroundCityPosition1);
+
+        sf::Sprite BackgroundCitySprite2;
+        sf::Vector2f BackgroundCityPosition2(9571, 0);
+        BackgroundCitySprite2.scale(sf::Vector2f(1.2, 1.2));
+        BackgroundCitySprite2.setTexture(BackgroundCityTexture);
+        BackgroundCitySprite2.setPosition(BackgroundCityPosition2);
 
         float xVelocity1 = -8;
         float xVelocity2 = -8;
@@ -411,29 +420,35 @@ int main()
                         PressSpace.setString("");
                     };
 
+                    
+                    
                     if (AuthJump == true) {
                         if (player1.Pos.y > player1.MaxJumpHeight && descent == false) {
-                            player1.Pos.y += JumpVelocity;
+                            player1.Acceleration = player1.Acceleration - 1;
+                            player1.Pos.y += player1.JumpVelocity + player1.Acceleration;
                             playerSprite1.setPosition(player1.Pos);
                             playerSprite2.setPosition(player1.Pos);
                             playerSprite3.setPosition(player1.Pos);
                             if (player1.Pos.y <= player1.MaxJumpHeight) {
-                                JumpVelocity = -4;
+                                player1.JumpVelocity = -4;
                             }
                         }
                         else if (player1.Pos.y < JumpStartPos) {
                             descent = true;
-                            player1.Pos.y -= JumpVelocity;
+                            player1.Acceleration = player1.Acceleration + 1;
+                            player1.Pos.y -= player1.JumpVelocity - player1.Acceleration;
                             playerSprite1.setPosition(player1.Pos);
                             playerSprite2.setPosition(player1.Pos);
                             playerSprite3.setPosition(player1.Pos);
                             if (player1.Pos.y >= JumpStartPos) {
                                 descent = false;
                                 AuthJump = false;
+                                player1.JumpVelocity = player1.DefaultJumpVelocity;
+                                player1.Acceleration = 0.0;
                             }
                         }
-                        if (descent == true && player1.Pos.y >= player1.MaxJumpHeight - 20) {
-                            JumpVelocity = -8;
+                        if (descent == true && player1.Pos.y >= player1.MaxJumpHeight + 20) {
+                            player1.JumpVelocity = player1.DefaultJumpVelocity;
                         }
 
                     }
@@ -448,12 +463,17 @@ int main()
                         xVelocity1 *= -1;
                     }
                     if (Background1Position.x < -2400) {
-                        Background1Position.x = 1896;
+                        Background1Position.x = 2196;
                     }
                     if (Background2Position.x < -2400) {
-                        Background2Position.x = 1896;
+                        Background2Position.x = 2196;
                     }
-
+                    if (BackgroundCityPosition1.x < -9571) {
+                        BackgroundCityPosition1.x = 9530;
+                    }
+                    if (BackgroundCityPosition2.x < -9571) {
+                        BackgroundCityPosition2.x = 9530;
+                    }
                     //What happens after an enemy reaches past the left side of the screen
 
                     if (enem2Position.x < -200 || enem2Position.x > 1370)  GameOver = true;;
@@ -470,8 +490,11 @@ int main()
                     Background1Sprite.setPosition(Background1Position);
                     Background2Position.x += ScollSpeed;
                     Background2Sprite.setPosition(Background2Position);
-                    BackgroundCityPosition.x += ScrollSpeed2;
-                    BackgroundCitySprite.setPosition(BackgroundCityPosition);
+                   
+                    BackgroundCityPosition1.x += ScrollSpeed2;
+                    BackgroundCitySprite1.setPosition(BackgroundCityPosition1);
+                    BackgroundCityPosition2.x += ScrollSpeed2;
+                    BackgroundCitySprite2.setPosition(BackgroundCityPosition2);
 
 
                     //Activation of movement for enemies 2 and 3
@@ -490,11 +513,11 @@ int main()
                     //Collision detection 
 
                     if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
-                        GameOver = true;
+                       // GameOver = true;
                     }
                     if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
                         enem2Position.x = 1370;
-                        xVelocity2 = rand() % 20 + 1;
+                        xVelocity2 = rand() % 17 + 3;
                         xVelocity2 *= -1;
                     }
                     if (AttackSpriteTop.getGlobalBounds().intersects(enemy3Sprite.getGlobalBounds())) {
@@ -518,33 +541,37 @@ int main()
 
                 
 
-         //Release of other enemies and evenst that happen in the switch between forms
+         //Release of other enemies and events that happen in the switch between forms
                 
                 if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
-                    JumpStartPos = JumpStartPos - 25;
+                    JumpStartPos = JumpStartPos - 30;
+                    /*player1.MaxJumpHeight = -10;*/
                     Track01.stop();
                     Track02.play();
                     AtkBotSfx.setVolume(60);
                     PressE.setString("Press E when the enemy gets above you");
                     ScollSpeed = -4;
                     ScrollSpeed2 = -0.4;
+                    playerSprite2.setPosition(100, 580);
                 }
                 if (player1.Points >= 30000 /*Change this value to change threshold for the second change*/ && player1.SecondAttack == false) {
                     player1.SecondAttack = true;
-                    JumpStartPos = JumpStartPos - 50;
+                    JumpStartPos = JumpStartPos - 40;
                     Track02.stop();
                     Track03.play();
                     AtkTopSfx.setVolume(50);
                     PressQ.setString("Press Q when the enemy gets above you");
                     ScollSpeed = -6;
                     ScrollSpeed2 = -0.6;
+                    playerSprite3.setPosition(100, 540);
                 }
 
          //Rendering
 
                 window.clear();
-                window.draw(BackgroundCitySprite);
+                window.draw(BackgroundCitySprite1);
+                window.draw(BackgroundCitySprite2);
                 window.draw(Background1Sprite);
                 window.draw(Background2Sprite);
 
@@ -563,15 +590,28 @@ int main()
                     GameOver = false;
                     
                     if (player1.FirstAttack == true) {
-                        JumpStartPos = JumpStartPos + 25;
+                        JumpStartPos = JumpStartPos + 30;
                         Track01.play();
                     }
-                    if (player1.SecondAttack == true) JumpStartPos = JumpStartPos + 50;
+                    if (player1.SecondAttack == true) JumpStartPos = JumpStartPos + 40;
+
+                    playerSprite1.setPosition(100, 600);
+                    playerSprite2.setPosition(100, 600);
+                    playerSprite3.setPosition(100, 600);
                     
+                    player1.Pos = (sf::Vector2f(100, 600));
+                    descent = false;
+                    AuthJump = false;
+                    player1.JumpVelocity = player1.DefaultJumpVelocity;
+                    player1.Acceleration = 0.0;
+                    ScollSpeed = -2;
+                    ScrollSpeed2 = -0.2;
+
                     player1.Points = 0;
                     text.setString("Puntaje: ");
                     
-                    BackgroundCityPosition = sf::Vector2f(0, -1000);
+                    BackgroundCityPosition1 = sf::Vector2f(0, 0);
+                    BackgroundCityPosition1 = sf::Vector2f(0, 8000);
                     Background1Position = sf::Vector2f(0, 0);
                     Background2Position = sf::Vector2f(2000, 0);
                     
