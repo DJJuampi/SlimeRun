@@ -353,13 +353,13 @@ int main()
         GameOverText.setOutlineThickness(8);
 
         GameOverText2.setFont(font);
-        GameOverText2.setString("Press Esc to exit");
+        GameOverText2.setString("Press Esc to exit or R to restart");
         GameOverText2.setPosition(200, 350);
         GameOverText2.setOutlineColor(sf::Color(0, 0, 0, 255));
         GameOverText2.setOutlineThickness(8);
 
         text.setFont(font);
-        text.setString("Puntaje: ");
+        text.setString("Points: ");
         text.setOutlineColor(sf::Color(0, 0, 0, 255));
         text.setOutlineThickness(8);
 
@@ -387,127 +387,127 @@ int main()
 
          //Makes the game stop when in the end screen
 
-               if (GameOver == false) {
+                if (GameOver == false) {
 
-         // Attacks against enemy 2 and 3
+                    // Attacks against enemy 2 and 3
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-                    player1.AttackBottom = true;
-                    AtkBotSfx.stop();
-                    AtkBotSfx.play();
-                    PressE.setString("");
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-                    player1.AttackTop = true;
-                    AtkTopSfx.stop();
-                    AtkTopSfx.play();
-                    PressQ.setString("");
-                }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+                        player1.AttackBottom = true;
+                        AtkBotSfx.stop();
+                        AtkBotSfx.play();
+                        PressE.setString("");
+                    }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+                        player1.AttackTop = true;
+                        AtkTopSfx.stop();
+                        AtkTopSfx.play();
+                        PressQ.setString("");
+                    }
 
-         // Player jump
+                    // Player jump
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-                    AuthJump = true;
-                    PressSpace.setString("");
-                };
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                        AuthJump = true;
+                        PressSpace.setString("");
+                    };
 
-                if (AuthJump == true) {
-                    if (player1.Pos.y > player1.MaxJumpHeight && descent == false) {
-                        player1.Pos.y += JumpVelocity;
-                        playerSprite1.setPosition(player1.Pos);
-                        playerSprite2.setPosition(player1.Pos);
-                        playerSprite3.setPosition(player1.Pos);
-                        if (player1.Pos.y <= player1.MaxJumpHeight) {
-                            JumpVelocity = -4;
+                    if (AuthJump == true) {
+                        if (player1.Pos.y > player1.MaxJumpHeight && descent == false) {
+                            player1.Pos.y += JumpVelocity;
+                            playerSprite1.setPosition(player1.Pos);
+                            playerSprite2.setPosition(player1.Pos);
+                            playerSprite3.setPosition(player1.Pos);
+                            if (player1.Pos.y <= player1.MaxJumpHeight) {
+                                JumpVelocity = -4;
+                            }
                         }
-                    }
-                    else if (player1.Pos.y < JumpStartPos) {
-                        descent = true;
-                        player1.Pos.y -= JumpVelocity;
-                        playerSprite1.setPosition(player1.Pos);
-                        playerSprite2.setPosition(player1.Pos);
-                        playerSprite3.setPosition(player1.Pos);
-                        if (player1.Pos.y >= JumpStartPos) {
-                            descent = false;
-                            AuthJump = false;
+                        else if (player1.Pos.y < JumpStartPos) {
+                            descent = true;
+                            player1.Pos.y -= JumpVelocity;
+                            playerSprite1.setPosition(player1.Pos);
+                            playerSprite2.setPosition(player1.Pos);
+                            playerSprite3.setPosition(player1.Pos);
+                            if (player1.Pos.y >= JumpStartPos) {
+                                descent = false;
+                                AuthJump = false;
+                            }
                         }
+                        if (descent == true && player1.Pos.y >= player1.MaxJumpHeight - 20) {
+                            JumpVelocity = -8;
+                        }
+
                     }
-                    if (descent == true && player1.Pos.y >= player1.MaxJumpHeight - 20) {
-                        JumpVelocity = -8;
+
+
+
+                    //Looping behaviour
+
+                    if (enem1Position.x < -200 || enem1Position.x > 1370) {
+                        enem1Position.x = 1370;
+                        xVelocity1 = rand() % 15 + 9;
+                        xVelocity1 *= -1;
                     }
-                    
+                    if (Background1Position.x < -2400) {
+                        Background1Position.x = 1896;
+                    }
+                    if (Background2Position.x < -2400) {
+                        Background2Position.x = 1896;
+                    }
+
+                    //What happens after an enemy reaches past the left side of the screen
+
+                    if (enem2Position.x < -200 || enem2Position.x > 1370)  GameOver = true;;
+                    if (enem3Position.x < -200 || enem3Position.x > 1370)  GameOver = true;;
+
+                    //Enemy 1 movement
+
+                    enem1Position.x += xVelocity1;
+                    enemy1Sprite.setPosition(enem1Position);
+
+                    //Main Scrolling Function for the background
+
+                    Background1Position.x += ScollSpeed;
+                    Background1Sprite.setPosition(Background1Position);
+                    Background2Position.x += ScollSpeed;
+                    Background2Sprite.setPosition(Background2Position);
+                    BackgroundCityPosition.x += ScrollSpeed2;
+                    BackgroundCitySprite.setPosition(BackgroundCityPosition);
+
+
+                    //Activation of movement for enemies 2 and 3
+
+                    if (player1.FirstAttack == true) {
+                        enem2Position.x += xVelocity2;
+                        enemy2Sprite.setPosition(enem2Position);
+
+                    }
+                    if (player1.SecondAttack == true) {
+                        enem3Position.x += xVelocity3;
+                        enemy3Sprite.setPosition(enem3Position);
+
+                    }
+
+                    //Collision detection 
+
+                    if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
+                        GameOver = true;
+                    }
+                    if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
+                        enem2Position.x = 1370;
+                        xVelocity2 = rand() % 20 + 1;
+                        xVelocity2 *= -1;
+                    }
+                    if (AttackSpriteTop.getGlobalBounds().intersects(enemy3Sprite.getGlobalBounds())) {
+                        enem3Position.x = 1370;
+                        xVelocity3 = rand() % 30 + 1;
+                        xVelocity3 *= -1;
+                    }
+
+                    //Point gain
+
+                    player1.Points = player1.Points + 1;
+
                 }
-
-
-
-         //Looping behaviour
-
-                if (enem1Position.x < -200 || enem1Position.x > 1370) {
-                    enem1Position.x = 1370;
-                    xVelocity1 = rand() % 15 + 9;
-                    xVelocity1 *= -1;
-                }
-                if (Background1Position.x < -2400) {
-                    Background1Position.x = 1896;
-                }
-                if (Background2Position.x < -2400) {
-                    Background2Position.x = 1896;
-                }
-
-         //What happens after an enemy reaches past the left side of the screen
-
-                if (enem2Position.x < -200 || enem2Position.x > 1370)  GameOver = true;;
-                if (enem3Position.x < -200 || enem3Position.x > 1370)  GameOver = true;;
-
-         //Enemy 1 movement
-
-                enem1Position.x += xVelocity1;
-                enemy1Sprite.setPosition(enem1Position);
-
-         //Main Scrolling Function for the background
-
-                Background1Position.x += ScollSpeed;
-                Background1Sprite.setPosition(Background1Position);
-                Background2Position.x += ScollSpeed;
-                Background2Sprite.setPosition(Background2Position);
-                BackgroundCityPosition.x += ScrollSpeed2;
-                BackgroundCitySprite.setPosition(BackgroundCityPosition);
-
-
-         //Activation of movement for enemies 2 and 3
-
-                if (player1.FirstAttack == true) {
-                    enem2Position.x += xVelocity2;
-                    enemy2Sprite.setPosition(enem2Position);
-
-                }
-                if (player1.SecondAttack == true) {
-                    enem3Position.x += xVelocity3;
-                    enemy3Sprite.setPosition(enem3Position);
-
-                }
-
-         //Collision detection 
-
-                if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
-                    GameOver = true;
-                }
-                if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
-                    enem2Position.x = 1370;
-                    xVelocity2 = rand() % 20 + 1;
-                    xVelocity2 *= -1;
-                }
-                if (AttackSpriteTop.getGlobalBounds().intersects(enemy3Sprite.getGlobalBounds())) {
-                    enem3Position.x = 1370;
-                    xVelocity3 = rand() % 30 + 1;
-                    xVelocity3 *= -1;
-                }
-
-         //Point gain
-
-                player1.Points = player1.Points + 1;
-                
-                 }
 
          //Fonts and text that need to be updated every frame
 
@@ -520,7 +520,7 @@ int main()
 
          //Release of other enemies and evenst that happen in the switch between forms
                 
-                if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
+                if (player1.Points >= 300 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
                     JumpStartPos = JumpStartPos - 25;
                     Track01.stop();
@@ -557,6 +557,36 @@ int main()
                     window.draw(GameOverText);
                     window.draw(GameOverText2);
                 }
+         //Restart Button
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+                    GameOver = false;
+                    
+                    if (player1.FirstAttack == true) {
+                        JumpStartPos = JumpStartPos + 25;
+                        Track01.play();
+                    }
+                    if (player1.SecondAttack == true) JumpStartPos = JumpStartPos + 50;
+                    
+                    player1.Points = 0;
+                    text.setString("Puntaje: ");
+                    
+                    BackgroundCityPosition = sf::Vector2f(0, -1000);
+                    Background1Position = sf::Vector2f(0, 0);
+                    Background2Position = sf::Vector2f(2000, 0);
+                    
+                    player1.FirstAttack = false;
+                    player1.SecondAttack = false;
+                    
+                    enem1Position.x = 1370;
+                    enem2Position.x = 1370;
+                    enemy2Sprite.setPosition(enem2Position);
+                    enem3Position.x = 1370;
+                    enemy3Sprite.setPosition(enem3Position);
+
+                    Track02.stop();
+                    Track03.stop();
+                };
 
          // Timer for the bottom attack and cooldown
 
