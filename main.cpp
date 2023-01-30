@@ -513,7 +513,7 @@ int main()
                     //Collision detection 
 
                     if (playerSprite1.getGlobalBounds().intersects(enemy1Sprite.getGlobalBounds())) {
-                       // GameOver = true;
+                       GameOver = true;
                     }
                     if (AttackSpriteBottom.getGlobalBounds().intersects(enemy2Sprite.getGlobalBounds())) {
                         enem2Position.x = 1370;
@@ -543,10 +543,9 @@ int main()
 
          //Release of other enemies and events that happen in the switch between forms
                 
-                if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
+                if (player1.Points >= 300 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
                     JumpStartPos = JumpStartPos - 30;
-                    /*player1.MaxJumpHeight = -10;*/
                     Track01.stop();
                     Track02.play();
                     AtkBotSfx.setVolume(60);
@@ -611,9 +610,9 @@ int main()
                     text.setString("Puntaje: ");
                     
                     BackgroundCityPosition1 = sf::Vector2f(0, 0);
-                    BackgroundCityPosition1 = sf::Vector2f(0, 8000);
+                    BackgroundCityPosition2 = sf::Vector2f(9571, 0);
                     Background1Position = sf::Vector2f(0, 0);
-                    Background2Position = sf::Vector2f(2000, 0);
+                    Background2Position = sf::Vector2f(2300, 0);
                     
                     player1.FirstAttack = false;
                     player1.SecondAttack = false;
