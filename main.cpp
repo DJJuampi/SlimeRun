@@ -520,7 +520,7 @@ int main()
 
          //Release of other enemies and evenst that happen in the switch between forms
                 
-                if (player1.Points >= 300 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
+                if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
                     JumpStartPos = JumpStartPos - 25;
                     Track01.stop();
