@@ -502,12 +502,10 @@ int main()
                     if (player1.FirstAttack == true) {
                         enem2Position.x += xVelocity2;
                         enemy2Sprite.setPosition(enem2Position);
-
                     }
                     if (player1.SecondAttack == true) {
                         enem3Position.x += xVelocity3;
                         enemy3Sprite.setPosition(enem3Position);
-
                     }
 
                     //Collision detection 
@@ -530,6 +528,38 @@ int main()
 
                     player1.Points = player1.Points + 1;
 
+                    //Music Fade in and Fade out, unsuccesful atm, the track wont stop playing
+
+                    /*if (player1.FirstAttack == true)  {
+                        if (Track01.getVolume() > 2) {
+                            Track01.setVolume(Track01.getVolume() - 1);
+                            printf("0");
+                        }
+                        if (Track01.getVolume() == 2) {
+                            Track01.setVolume(Track01.getVolume() - 1);
+                            Track01.stop();
+                            Track02.play();
+                            Track01.setVolume(0);
+                        }
+                        if (Track02.getVolume() == 0) {
+                            if (Track02.getVolume() < MusicVolume) {
+                                Track02.setVolume(Track02.getVolume() + 1);
+                            }
+                        }
+                    }*/
+                    
+                   
+
+                    /*if (player1.SecondAttack == true) {
+                        if (Track02.getVolume() > 0) {
+                            Track02.setVolume(Track02.getVolume() - 1);
+
+                        }
+                        if (Track02.getVolume() == 0) {
+                            Track02.stop();
+                            Track03.play();
+                        }
+                    }*/
                 }
 
          //Fonts and text that need to be updated every frame
@@ -543,7 +573,7 @@ int main()
 
          //Release of other enemies and events that happen in the switch between forms
                 
-                if (player1.Points >= 300 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
+                if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
                     JumpStartPos = JumpStartPos - 30;
                     Track01.stop();
@@ -565,7 +595,7 @@ int main()
                     ScrollSpeed2 = -0.6;
                     playerSprite3.setPosition(100, 540);
                 }
-
+                
          //Rendering
 
                 window.clear();
