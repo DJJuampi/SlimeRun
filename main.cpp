@@ -180,6 +180,7 @@ int main()
         }
         Track01.setVolume(MusicVolume);
         Track01.play();
+        Track01.setLoop(true);
 
         sf::Music Track02;
         if (!Track02.openFromFile("assets/Track02.ogg")) { //Song: Meguru mono Instrumental https://www.youtube.com/watch?v=13aiTKN8VWI
@@ -187,6 +188,7 @@ int main()
             return 0;
         }
         Track02.setVolume(MusicVolume);
+        Track02.setLoop(true);
 
         sf::Music Track03;
         if (!Track03.openFromFile("assets/Track03.ogg")) { //Song: Like Flames https://youtu.be/q8TGietS5Q0
@@ -194,6 +196,7 @@ int main()
             return 0;
         }
         Track03.setVolume(MusicVolume);
+        Track03.setLoop(true);
 
  // Sound Effects / Sfx
 
@@ -573,7 +576,7 @@ int main()
 
          //Release of other enemies and events that happen in the switch between forms
                 
-                if (player1.Points >= 3000 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
+                if (player1.Points >= 1500 /*Change this value to change threshold for the first change*/ && player1.FirstAttack == false) {
                     player1.FirstAttack = true;
                     JumpStartPos = JumpStartPos - 30;
                     Track01.stop();
